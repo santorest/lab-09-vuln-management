@@ -1,0 +1,13 @@
+{
+  "note": "test fixture; values are illustrative, not real EPSS scores",
+  "date": "2026-10-01",
+  "source": "https://api.first.org/data/v1/epss",
+  "scores": {
+    "CVE-2023-4911": 0.81422,
+    "CVE-2024-6387": 0.99506,
+    "CVE-2024-7347": 0.0009,
+    "CVE-2023-5678": 0.12,
+    "CVE-2024-10979": 0.03,
+    "CVE-2024-45491": 0.02
+  }
+}
