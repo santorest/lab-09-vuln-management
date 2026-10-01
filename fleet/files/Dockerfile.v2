@@ -1,0 +1,13 @@
+# Remediated: current Debian 12 packages and security updates; anonymous FTP turned off.
+FROM debian:12@sha256:f37a335e82bca302e955fa39f9dfe28f1be618f016f8a2b56318e5a5111afc26
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openssh-server vsftpd \
+ && rm -rf /var/lib/apt/lists/* \
+ && useradd --create-home --shell /bin/bash scan \
+ && mkdir -p /etc/ssh/authorized_keys /run/sshd /var/run/vsftpd/empty /srv/ftp
+COPY common/sshd_config /etc/ssh/sshd_config
+COPY files/vsftpd.v2.conf /etc/vsftpd.conf
+COPY files/start.sh /usr/local/bin/start.sh
+EXPOSE 21 22
+CMD ["/usr/local/bin/start.sh"]

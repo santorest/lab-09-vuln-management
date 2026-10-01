@@ -112,13 +112,28 @@ services:
     volumes: [../out/keys/scan_key.pub:/etc/ssh/authorized_keys/scan:ro]
     networks: {default: {ipv4_address: 172.30.0.11}}
 
+  files:
+    build:
+      context: ../fleet
+      dockerfile: files/Dockerfile.${FLEET_VERSION:-v1}
+    image: lab09/files:${FLEET_VERSION:-v1}
+    volumes: [../out/keys/scan_key.pub:/etc/ssh/authorized_keys/scan:ro]
+    networks: {default: {ipv4_address: 172.30.0.12}}
+  db:
+    build:
+      context: ../fleet
+      dockerfile: db/Dockerfile.${FLEET_VERSION:-v1}
+    image: lab09/db:${FLEET_VERSION:-v1}
+    volumes: [../out/keys/scan_key.pub:/etc/ssh/authorized_keys/scan:ro]
+    networks: {default: {ipv4_address: 172.30.0.13}}
+
   # --- runner: talks to gvmd over its socket ---
   runner:
     build: {context: .., dockerfile: runner/Dockerfile}
     image: lab09/runner:local
     profiles: [tools]
     environment: [GVM_PASSWORD]
-    volumes: [gvmd_socket_vol:/run/gvmd, ../out:/out, ../spike:/spike:ro]
+    volumes: [gvmd_socket_vol:/run/gvmd, ../out:/out, ../policy:/policy:ro]
 
 networks:
   default:

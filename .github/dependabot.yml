@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      python:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        update-types: [minor, patch]
+  - package-ecosystem: docker
+    directory: /runner
+    schedule:
+      interval: weekly
+# Not watched on purpose: fleet/*/Dockerfile.v1 is pinned to old images and package snapshots (the "as found"
+# state the lab scans), and the Greenbone digests in lab/compose.yaml are bumped by hand with a rescan.
