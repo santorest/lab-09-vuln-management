@@ -1,0 +1,13 @@
+flowchart TB
+  P["policy.yaml / assets.csv / exceptions.yaml"] --> T
+  F1["fleet v1: web, files, db<br/>Debian 12.0 packages of 2023-06-15"] --> G["Greenbone CE<br/>authenticated + network scan"]
+  G --> N["normalize -> findings per host"]
+  N --> I["EPSS + CISA KEV<br/>snapshots saved with the run"]
+  I --> R["prioritize: KEV, EPSS, CVSS, criticality<br/>P1..P4"]
+  R --> T["tracker: owner, SLA due date, status"]
+  F2["fleet v2: upgraded packages + config fixes"] --> G2["rescan"]
+  G2 --> T
+  T --> M["metrics + report"]
+  T --> Q{"open P1/P2 without a valid exception?"}
+  Q -- yes --> X["CI fails"]
+  Q -- no --> OK["cycle passes"]

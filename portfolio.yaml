@@ -1,0 +1,31 @@
+# Metadata used by the portfolio site's `import_lab` command (site repo). Not needed to run the lab.
+slug: vuln-management
+category: vulnerability-pentesting
+repo_url: https://github.com/santorest/lab-09-vuln-management
+status: in_progress          # design | in_progress | complete — set to complete only after the owner confirms
+difficulty: intermediate     # beginner | intermediate | advanced
+featured: true
+# The CI results are real; the hosts are lab containers.
+sample_output_notice: true
+cover: diagrams/architecture.png
+writeup:
+  en: WRITEUP.md
+  es: WRITEUP.es.md
+title:
+  en: "Vulnerability Management Workflow (Greenbone, EPSS, KEV)"
+  es: "Flujo de gestión de vulnerabilidades (Greenbone, EPSS, KEV)"
+summary:
+  en: >-
+    Greenbone scans three outdated lab hosts with SSH credentials; findings are prioritized with CVSS, EPSS, CISA KEV
+    and asset criticality under a written policy, tracked with SLA due dates, remediated and rescanned. Measured in
+    CI against containers.
+  es: >-
+    Greenbone escanea tres hosts de laboratorio desactualizados con credenciales SSH; los hallazgos se priorizan con
+    CVSS, EPSS, CISA KEV y criticidad del activo según una política escrita, se siguen con fechas de SLA, se corrigen
+    y se vuelven a escanear. Medido en CI con contenedores.
+tools: [Greenbone, OpenVAS, Python, python-gvm, EPSS, CISA KEV, CVSS, Docker, Debian, GitHub Actions]
+mitre_attack: [T1190, T1210, T1068]
+bundle:
+  title:
+    en: Lab source bundle
+    es: Paquete de fuentes del laboratorio
