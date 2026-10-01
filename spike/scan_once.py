@@ -8,7 +8,7 @@ from gvm.connections import UnixSocketConnection
 from gvm.errors import GvmError
 from gvm.protocols.gmp import GMP
 from gvm.protocols.gmp.requests.v225 import AliveTest, CredentialType
-from gvm.transforms import EtreeCheckResponseTransform
+from gvm.transforms import EtreeCheckCommandTransform
 from lxml import etree
 
 FULL_AND_FAST = "daba56c8-73ec-11df-a475-002264764cea"
@@ -22,7 +22,7 @@ def log(message):
     print(f"[{time.monotonic() - start:7.1f}s] {message}", flush=True)
 
 
-with GMP(UnixSocketConnection(timeout=600), transform=EtreeCheckResponseTransform()) as gmp:
+with GMP(UnixSocketConnection(timeout=600), transform=EtreeCheckCommandTransform()) as gmp:
     log(f"GMP {gmp.get_version().findtext('version')}")
     gmp.authenticate("admin", os.environ["GVM_PASSWORD"])
     while True:
