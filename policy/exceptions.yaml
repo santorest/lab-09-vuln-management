@@ -1,0 +1,3 @@
+# Risk acceptances: host name (from assets.csv), Greenbone NVT OID, reason, approver role, expiry (YYYY-MM-DD).
+# An expired acceptance reopens the finding.
+exceptions: []

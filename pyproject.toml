@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vulnmgmt"
+version = "1.0.0"
+description = "Vulnerability management cycle: Greenbone scan, CVSS+EPSS+KEV prioritization, SLA tracking (portfolio lab 09)"
+requires-python = ">=3.12"
+license = "MIT"
+dependencies = ["python-gvm>=27.10", "defusedxml>=0.7", "PyYAML>=6.0"]
+
+[project.scripts]
+vulnmgmt = "vulnmgmt.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+
+[tool.coverage.run]
+source = ["vulnmgmt"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["spike"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_calls = false
+
+[[tool.mypy.overrides]]
+module = ["gvm.*", "lxml.*", "defusedxml.*"]
+ignore_missing_imports = true

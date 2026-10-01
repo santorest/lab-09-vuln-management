@@ -1,0 +1,14 @@
+# Vulnerability management policy for the lab fleet. The prioritization formula is documented in
+# docs/prioritization.md; the thresholds below are its inputs.
+scan_frequency: "weekly, and after every change (CI: weekly schedule, every pull request, manual runs)"
+cvss_floor: 4.0          # below this a finding is informational: tracked, never gating
+thresholds:
+  epss: 0.10             # probability of exploitation in the next 30 days (FIRST EPSS)
+  high_cvss: 7.0
+  critical_cvss: 9.0
+sla_days:                # days from the scan that found it to the due date
+  P1: 7
+  P2: 30
+  P3: 90
+  P4: 180
+gate: [P1, P2]           # CI fails if any of these is open after remediation without a valid exception

@@ -1,0 +1,4 @@
+name,address,owner,criticality,exposure
+web,172.30.0.11,web team,3,internet-facing
+files,172.30.0.12,infrastructure team,2,internal
+db,172.30.0.13,data team,3,internal
