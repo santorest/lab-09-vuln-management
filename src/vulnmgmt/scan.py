@@ -99,7 +99,7 @@ def scan(
     from gvm.protocols.gmp import GMP
     from gvm.transforms import EtreeCheckCommandTransform
 
-    with GMP(UnixSocketConnection(timeout=600), transform=EtreeCheckCommandTransform()) as gmp:
+    with GMP(UnixSocketConnection(timeout=600), transform=EtreeCheckCommandTransform()) as gmp:  # type: ignore[no-untyped-call]
         gmp.authenticate("admin", password)
         count = wait_until_ready(gmp, timeouts)
         print(f"feed ready: {count} VTs in Full and fast", flush=True)
