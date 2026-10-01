@@ -1,0 +1,44 @@
+name: spike
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  greenbone:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Secrets for this run
+        run: bash scripts/make-secrets.sh
+      - name: Start Greenbone and the host
+        run: |
+          df -h / && free -m
+          docker compose -f lab/compose.yaml up -d --build
+          docker compose -f lab/compose.yaml ps
+      - name: Set the admin password
+        run: |
+          for i in $(seq 1 60); do
+            if docker compose -f lab/compose.yaml exec -T -u gvmd gvmd gvmd --get-users 2>/dev/null | grep -qx admin; then break; fi
+            sleep 10
+          done
+          docker compose -f lab/compose.yaml exec -T -u gvmd gvmd gvmd --get-users
+          docker compose -f lab/compose.yaml exec -T -u gvmd gvmd gvmd --user=admin --new-password="$GVM_PASSWORD"
+      - name: Scan one host
+        run: docker compose -f lab/compose.yaml --profile tools run --rm runner python /spike/scan_once.py
+      - name: Resources and logs
+        if: always()
+        run: |
+          free -m; df -h /
+          docker compose -f lab/compose.yaml ps -a
+          docker compose -f lab/compose.yaml logs --tail 80 gvmd ospd-openvas openvasd web
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: spike
+          path: out/spike-report.xml
+          if-no-files-found: ignore

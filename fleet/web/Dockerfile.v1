@@ -1,0 +1,16 @@
+# "As found": Debian 12.0 with packages exactly as they were on 2023-06-15 (Debian snapshot archive).
+FROM debian:12.0@sha256:3d868b5eb908155f3784317b3dda2941df87bbbbaa4608f84881de66d9bb297b
+RUN rm -f /etc/apt/sources.list.d/debian.sources \
+ && printf '%s\n' \
+    'deb http://snapshot.debian.org/archive/debian/20230615T000000Z bookworm main' \
+    'deb http://snapshot.debian.org/archive/debian-security/20230615T000000Z bookworm-security main' \
+    > /etc/apt/sources.list \
+ && apt-get -o Acquire::Check-Valid-Until=false update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openssh-server nginx \
+ && rm -rf /var/lib/apt/lists/* \
+ && useradd --create-home --shell /bin/bash scan \
+ && mkdir -p /etc/ssh/authorized_keys /run/sshd
+COPY common/sshd_config /etc/ssh/sshd_config
+COPY web/start.sh /usr/local/bin/start.sh
+EXPOSE 22 80
+CMD ["/usr/local/bin/start.sh"]

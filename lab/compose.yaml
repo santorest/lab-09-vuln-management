@@ -1,0 +1,158 @@
+# Greenbone Community Edition (scanner core, no web UI) + the lab fleet, on one network.
+# Based on https://greenbone.github.io/docs/latest/_static/compose.yaml; every image pinned by digest.
+name: lab09
+
+services:
+  vulnerability-tests:
+    image: registry.community.greenbone.net/community/vulnerability-tests@sha256:86a44fb7a9f9b982d521f98914aba98846f573b4f9ec9e8c1007c4866ec943af
+    environment: {FEED_RELEASE: "24.10", KEEP_ALIVE: 1}
+    volumes: [vt_data_vol:/mnt]
+  notus-data:
+    image: registry.community.greenbone.net/community/notus-data@sha256:f53836e6ac0eb3abb7f5ab74ccf93b8317fedd2ba5cd293473cd307c148fc4c3
+    environment: {KEEP_ALIVE: 1}
+    volumes: [notus_data_vol:/mnt]
+  scap-data:
+    image: registry.community.greenbone.net/community/scap-data@sha256:54c9c81d70e0072e6e31ef62de94326546081b6d888d443fcbb2c5dfde5c59a8
+    environment: {KEEP_ALIVE: 1}
+    volumes: [scap_data_vol:/mnt]
+  cert-bund-data:
+    image: registry.community.greenbone.net/community/cert-bund-data@sha256:735b786ccb113e8ef437c6328cda15acdf74478bfcd4c0ec39031b79960635e8
+    environment: {KEEP_ALIVE: 1}
+    volumes: [cert_data_vol:/mnt]
+  dfn-cert-data:
+    image: registry.community.greenbone.net/community/dfn-cert-data@sha256:4926366038df2e655f7de04ca10733984cf46fce7f44d205a7b2393a10f0f148
+    environment: {KEEP_ALIVE: 1}
+    volumes: [cert_data_vol:/mnt]
+    depends_on: {cert-bund-data: {condition: service_healthy}}
+  data-objects:
+    image: registry.community.greenbone.net/community/data-objects@sha256:3ef69ac56aca55981f164e228eceab4116aa8e1a855e1a83d108f3621a83445f
+    environment: {FEED_RELEASE: "24.10", KEEP_ALIVE: 1}
+    volumes: [data_objects_vol:/mnt]
+  report-formats:
+    image: registry.community.greenbone.net/community/report-formats@sha256:3b1352bec64190d2f8716fe1044d03d61da5b4863a99f78e856762bbf77e9d45
+    environment: {FEED_RELEASE: "24.10", KEEP_ALIVE: 1}
+    volumes: [data_objects_vol:/mnt]
+    depends_on: {data-objects: {condition: service_healthy}}
+  gpg-data:
+    image: registry.community.greenbone.net/community/gpg-data@sha256:aa6954b978ce1f7320ec508b91ca39e3632632533fca9e425bd74296a369389c
+    volumes: [gpg_data_vol:/mnt]
+  redis-server:
+    image: registry.community.greenbone.net/community/redis-server@sha256:6da6a7c7221aa3ab231961fd6ca001d552b6a2c7727ac6201c6d8a360baa963a
+    restart: always
+    volumes: [redis_socket_vol:/run/redis/]
+  pg-gvm-migrator:
+    image: registry.community.greenbone.net/community/pg-gvm-migrator@sha256:201da953f12dd26c84db8aa0117465de0aac9916f4e1d2d60b4fcb6f86176d4e
+    volumes: [psql_data_vol:/var/lib/postgresql, psql_socket_vol:/var/run/postgresql]
+  pg-gvm:
+    image: registry.community.greenbone.net/community/pg-gvm@sha256:b81bc5d7a750203ea25c6e4dd086751ecee8e388d1cb2501c60b3805e0056204
+    restart: always
+    volumes: [psql_data_vol:/var/lib/postgresql, psql_socket_vol:/var/run/postgresql]
+    depends_on: {pg-gvm-migrator: {condition: service_completed_successfully}}
+  gvmd:
+    image: registry.community.greenbone.net/community/gvmd@sha256:fec601848e0847b27d7bb262b684a05747d369b85ddde75f7074fd2880f06221
+    restart: always
+    volumes:
+      - gvmd_data_vol:/var/lib/gvm
+      - scap_data_vol:/var/lib/gvm/scap-data/
+      - cert_data_vol:/var/lib/gvm/cert-data
+      - data_objects_vol:/var/lib/gvm/data-objects/gvmd
+      - vt_data_vol:/var/lib/openvas/plugins
+      - psql_data_vol:/var/lib/postgresql
+      - gvmd_socket_vol:/run/gvmd
+      - ospd_openvas_socket_vol:/run/ospd
+      - psql_socket_vol:/var/run/postgresql
+    depends_on:
+      pg-gvm: {condition: service_started}
+      scap-data: {condition: service_healthy}
+      cert-bund-data: {condition: service_healthy}
+      dfn-cert-data: {condition: service_healthy}
+      data-objects: {condition: service_healthy}
+      report-formats: {condition: service_healthy}
+  configure-openvas:
+    image: registry.community.greenbone.net/community/openvas-scanner@sha256:2b9782730e41ee84c727f3846d28cba982cfc259f4f2a621550a4aaf8cce9d7b
+    volumes: [openvas_data_vol:/mnt, openvas_log_data_vol:/var/log/openvas]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        printf "table_driven_lsc = yes\nopenvasd_server = http://openvasd:80\n" > /mnt/openvas.conf
+        sed "s/127/128/" /etc/openvas/openvas_log.conf | sed 's/gvm/openvas/' > /mnt/openvas_log.conf
+        chmod 644 /mnt/openvas.conf /mnt/openvas_log.conf
+        touch /var/log/openvas/openvas.log
+        chmod 666 /var/log/openvas/openvas.log
+  openvasd:
+    image: registry.community.greenbone.net/community/openvas-scanner@sha256:2b9782730e41ee84c727f3846d28cba982cfc259f4f2a621550a4aaf8cce9d7b
+    restart: always
+    environment: {OPENVASD_MODE: service_notus, GNUPGHOME: /etc/openvas/gnupg, LISTENING: "0.0.0.0:80"}
+    volumes:
+      - openvas_data_vol:/etc/openvas
+      - openvas_log_data_vol:/var/log/openvas
+      - gpg_data_vol:/etc/openvas/gnupg
+      - notus_data_vol:/var/lib/notus
+    depends_on:
+      vulnerability-tests: {condition: service_healthy}
+      notus-data: {condition: service_healthy}
+      configure-openvas: {condition: service_completed_successfully}
+      gpg-data: {condition: service_completed_successfully}
+    networks:
+      default:
+        aliases: [openvasd]
+  ospd-openvas:
+    image: registry.community.greenbone.net/community/ospd-openvas@sha256:db44c0dbdc63b4f57b3a0a92d8af6882dfe4559bd4409a7dd0ce49d732230c82
+    restart: always
+    hostname: ospd-openvas.local
+    cap_add: [NET_ADMIN, NET_RAW]
+    security_opt: [seccomp=unconfined, apparmor=unconfined]
+    command: [ospd-openvas, -f, --config, /etc/gvm/ospd-openvas.conf, --notus-feed-dir, /var/lib/notus/advisories, -m, "666"]
+    volumes:
+      - gpg_data_vol:/etc/openvas/gnupg
+      - vt_data_vol:/var/lib/openvas/plugins
+      - notus_data_vol:/var/lib/notus
+      - ospd_openvas_socket_vol:/run/ospd
+      - redis_socket_vol:/run/redis/
+      - openvas_data_vol:/etc/openvas/
+      - openvas_log_data_vol:/var/log/openvas
+    depends_on:
+      redis-server: {condition: service_started}
+      gpg-data: {condition: service_completed_successfully}
+      configure-openvas: {condition: service_completed_successfully}
+      vulnerability-tests: {condition: service_healthy}
+      notus-data: {condition: service_healthy}
+
+  # --- the lab fleet: FLEET_VERSION=v1 (as found) or v2 (remediated) ---
+  web:
+    build:
+      context: ../fleet
+      dockerfile: web/Dockerfile.${FLEET_VERSION:-v1}
+    image: lab09/web:${FLEET_VERSION:-v1}
+    volumes: [../out/keys/scan_key.pub:/etc/ssh/authorized_keys/scan:ro]
+    networks: {default: {ipv4_address: 172.30.0.11}}
+
+  # --- runner: talks to gvmd over its socket ---
+  runner:
+    build: {context: .., dockerfile: runner/Dockerfile}
+    image: lab09/runner:local
+    profiles: [tools]
+    environment: [GVM_PASSWORD]
+    volumes: [gvmd_socket_vol:/run/gvmd, ../out:/out, ../spike:/spike:ro]
+
+networks:
+  default:
+    ipam:
+      config: [{subnet: 172.30.0.0/24}]
+
+volumes:
+  gpg_data_vol:
+  scap_data_vol:
+  cert_data_vol:
+  data_objects_vol:
+  gvmd_data_vol:
+  psql_data_vol:
+  vt_data_vol:
+  notus_data_vol:
+  psql_socket_vol:
+  gvmd_socket_vol:
+  ospd_openvas_socket_vol:
+  redis_socket_vol:
+  openvas_data_vol:
+  openvas_log_data_vol:
