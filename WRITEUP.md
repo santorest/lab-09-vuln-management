@@ -3,7 +3,7 @@ title: "Vulnerability Management Workflow (Greenbone, EPSS, KEV)"
 id: "lab-09-vuln-management"
 category: "Vulnerability Assessment & Pentesting"
 type: "Lab"
-status: "completed"
+status: "in progress"
 date: "2026-10-01"
 time_to_reproduce: "One CI run (fork, enable Actions, run CI); the measured duration is in the Results"
 skills: [Greenbone, OpenVAS, Python, python-gvm, EPSS, CISA KEV, CVSS, Docker, Debian, GitHub Actions]

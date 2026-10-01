@@ -1,7 +1,9 @@
-# Key-only login for the scanner's account; keys live outside the home directory (mounted read-only).
+# Key-only login for the scanner's account; keys live outside the home directory (root-owned copy, see start.sh).
+# The account's password is "*" (no password), not "!" (locked): without PAM, sshd refuses keys for locked accounts.
 Port 22
 PermitRootLogin no
 PubkeyAuthentication yes
 AuthorizedKeysFile /etc/ssh/authorized_keys/%u
 UsePAM no
+LogLevel VERBOSE
 Subsystem sftp /usr/lib/openssh/sftp-server

@@ -2,5 +2,7 @@
 # Host keys are generated at start, so every container has its own.
 set -e
 ssh-keygen -A
-/usr/sbin/sshd
+# The key is mounted from the runner (owned by the runner's uid); StrictModes needs a root-owned copy.
+install -m 644 -o root -g root /run/keys/scan.pub /etc/ssh/authorized_keys/scan
+/usr/sbin/sshd -E /var/log/sshd.log
 exec nginx -g 'daemon off;'

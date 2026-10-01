@@ -3,7 +3,7 @@ title: "Flujo de gestión de vulnerabilidades (Greenbone, EPSS, KEV)"
 id: "lab-09-vuln-management"
 category: "Evaluación de vulnerabilidades y pentesting"
 type: "Laboratorio"
-status: "completado"
+status: "en curso"
 date: "2026-10-01"
 time_to_reproduce: "Una ejecución de CI (fork, activar Actions, ejecutar CI); la duración medida está en los Resultados"
 skills: [Greenbone, OpenVAS, Python, python-gvm, EPSS, CISA KEV, CVSS, Docker, Debian, GitHub Actions]

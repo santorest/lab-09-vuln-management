@@ -9,6 +9,7 @@ RUN rm -f /etc/apt/sources.list.d/debian.sources \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openssh-server nginx \
  && rm -rf /var/lib/apt/lists/* \
  && useradd --create-home --shell /bin/bash scan \
+ && usermod --password '*' scan \
  && mkdir -p /etc/ssh/authorized_keys /run/sshd
 COPY common/sshd_config /etc/ssh/sshd_config
 COPY web/start.sh /usr/local/bin/start.sh
