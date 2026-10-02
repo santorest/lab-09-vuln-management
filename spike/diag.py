@@ -9,7 +9,7 @@ from gvm.transforms import EtreeCheckCommandTransform
 from lxml import etree
 
 XML = "a994b278-1f62-11e1-96ac-406186ea4fc5"
-OID = os.environ.get("DIAG_OID", "1.3.6.1.4.1.25623.1.1.1.2.2023.5514")
+OIDS = ["1.3.6.1.4.1.25623.1.1.1.1.2023.5514", "1.3.6.1.4.1.25623.1.1.1.2.2026.4667", "1.3.6.1.4.1.25623.1.0.108842"]
 
 
 def show(label, fn):
@@ -32,7 +32,8 @@ with GMP(UnixSocketConnection(timeout=600), transform=EtreeCheckCommandTransform
     if r is not None:
         res = r.findall(".//results/result")
         print("   results", len(res), "with refs", sum(1 for x in res if x.find("nvt/refs") is not None))
-    show(f"get_info NVT {OID}", lambda: gmp.get_info(OID, info_type=InfoType.NVT))
-    x = show(f"get_scan_config_nvt {OID}", lambda: gmp.get_scan_config_nvt(OID))
-    if x is not None:
-        print(etree.tostring(x).decode()[:1500])
+    for oid in OIDS:
+        x = show(f"get_info NVT {oid}", lambda oid=oid: gmp.get_info(oid, info_type=InfoType.NVT))
+        if x is not None:
+            print(etree.tostring(x).decode()[:1200])
+        show(f"get_scan_config_nvt {oid}", lambda oid=oid: gmp.get_scan_config_nvt(oid))
