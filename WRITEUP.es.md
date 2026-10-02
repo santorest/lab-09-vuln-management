@@ -48,11 +48,14 @@ una fecha de vencimiento. Este laboratorio construye ese proceso de principio a 
 - **La política como archivos.** `policy/policy.yaml` contiene la frecuencia, los días de SLA por prioridad, el piso de
   CVSS y los umbrales; `policy/exceptions.yaml` contiene las aceptaciones de riesgo. `docs/policy.md` dice lo mismo en
   prosa.
-- **Sin pérdida silenciosa de cobertura.** Un escaneo que no termina, un tiempo de espera agotado o un host del
-  inventario ausente del reporte es un error (código 2), nunca "0 hallazgos". Un nuevo escaneo que se saltara un host
-  sin avisar parecería una corrección perfecta.
+- **Sin pérdida silenciosa de cobertura.** Un escaneo que no termina, un tiempo de espera agotado, un host del
+  inventario ausente del reporte, un host cuyas comprobaciones autenticadas no se ejecutaron (sin inicio de sesión
+  SSH, o sin salida de sus comandos), un host que se detuvo durante el escaneo o resultados de paquetes sin ningún CVE
+  son errores (código 2), nunca "0 hallazgos". Un nuevo escaneo que se saltara un host sin avisar, o que solo lo viera
+  desde la red, parecería una corrección perfecta.
 - **Greenbone en CI.** Los contenedores de la comunidad se ejecutan sin la interfaz web; el feed es un conjunto de
-  imágenes de datos fijadas por digest, así que una ejecución no depende de una sincronización en vivo. La orquestación
+  imágenes de datos, no una sincronización en vivo; Greenbone conserva solo su versión actual, así que cada
+  ejecución descarga la última y registra los digests que usó. La orquestación
   habla GMP por el socket Unix de gvmd con python-gvm: espera a que el escáner y la configuración "Full and fast" estén
   listos, crea una credencial SSH desechable y un objetivo, ejecuta una tarea y descarga el reporte XML.
 
@@ -116,7 +119,7 @@ seguimiento de esa ejecución.
 
 | | |
 |---|---|
-| Greenbone | gvmd 26.40.2; "Full and fast" con 188.961 pruebas de vulnerabilidades; imágenes del feed fijadas por digest (`vulnerability-tests@sha256:86a44fb7a9f9…`, `notus-data@sha256:f53836e6ac0e…`) |
+| Greenbone | gvmd 26.40.2; "Full and fast" con 188.961 pruebas de vulnerabilidades; imágenes del feed usadas en esa ejecución (`vulnerability-tests@sha256:86a44fb7a9f9…`, `notus-data@sha256:f53836e6ac0e…`) |
 | Escaneos | v1 8 min 50 s, v2 8 min 50 s; reporte v1 con 202 resultados, v2 con 94 (QoD ≥ 70) |
 | Enriquecimiento | EPSS del 2026-10-01: 163 de 163 CVE con puntaje; catálogo CISA KEV 2026.10.01: 1 de ellos listado |
 | Job completo | 31 minutos (47 en la segunda ejecución), incluido el arranque de Greenbone y la carga del feed |
@@ -172,6 +175,10 @@ seguimiento de esa ejecución.
   nada: su contenedor se había detenido, porque vsftpd era el proceso principal y falló con las sondas FTP de
   Greenbone. Ahora sshd es el proceso principal, vsftpd se reinicia si muere y el ciclo falla si algún host se detiene
   durante un escaneo.
+- **Un pin puede caducar.** Las imágenes de datos del feed estaban fijadas por digest como todo lo demás; un día
+  después el registro respondió "not found" para cuatro de ellas. Greenbone las reconstruye a diario y conserva solo
+  la actual, así que el laboratorio ahora fija el software, descarga el feed actual y registra sus digests en cada
+  ejecución.
 - **Revisar la biblioteca, no la documentación que se recuerda.** El primer spike habría fallado al importar: la
   transformación de python-gvm se llama `EtreeCheckCommandTransform`. mypy lo encontró antes que CI.
 
@@ -180,7 +187,9 @@ seguimiento de esa ejecución.
 - Contenedores, no hosts reales; no se escanea ninguna red real.
 - Los contenedores comparten el kernel del runner, así que los hallazgos del kernel (mitigaciones de vulnerabilidades
   de CPU ausentes) siguen abiertos tras la corrección: reconstruir una imagen no puede corregirlos.
-- El feed comunitario de Greenbone es un snapshot fijado; los feeds SCAP y CERT no se cargan.
+- Las imágenes de datos del feed no se pueden fijar (Greenbone borra las versiones anteriores en aproximadamente un
+  día); cada ejecución registra los digests que usó, y una ejecución posterior puede usar pruebas más nuevas. Los
+  feeds SCAP y CERT no se cargan.
 - EPSS y KEV se consultan en la fecha de la ejecución, así que una ejecución posterior puede priorizar el mismo
   hallazgo de otra forma; cada ejecución guarda los snapshots que usó.
 - El tiempo de corrección se mide en minutos dentro de una ejecución, no en días.

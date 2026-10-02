@@ -9,6 +9,6 @@ RUN apt-get update \
  && mkdir -p /etc/ssh/authorized_keys /run/sshd /var/run/vsftpd/empty /srv/ftp
 COPY common/sshd_config /etc/ssh/sshd_config
 COPY files/vsftpd.v2.conf /etc/vsftpd.conf
-COPY files/start.sh /usr/local/bin/start.sh
+COPY files/start.sh files/restart-loop.sh /usr/local/bin/
 EXPOSE 21 22
 CMD ["/usr/local/bin/start.sh"]

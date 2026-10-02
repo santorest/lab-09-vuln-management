@@ -4,10 +4,15 @@
 # `pip install -r requirements.txt && pip install --no-deps -e .`; run scripts/make-secrets.sh first).
 set -euo pipefail
 : "${GVM_PASSWORD:?run scripts/make-secrets.sh first}"
+. "$(dirname "$0")/lib.sh"
 compose() { docker compose -f lab/compose.yaml "$@"; }
 mkdir -p out
 
 FLEET_VERSION=v1 compose up -d --build
+# The feed data images are pulled at their current version (lab/compose.yaml says why): record what this run used.
+for name in vulnerability-tests notus-data data-objects report-formats; do
+  docker image inspect --format '{{index .RepoDigests 0}}' "registry.community.greenbone.net/community/$name:latest"
+done | tee out/feed-images.txt
 for i in $(seq 1 90); do
   if compose exec -T -u gvmd gvmd gvmd --get-users 2>/dev/null | grep -qx admin; then break; fi
   sleep 10
@@ -25,10 +30,15 @@ fi
 
 # gvmd builds its in-memory VT cache at start, while its database has no VTs yet, and answers every GMP request
 # with empty <refs/> until it restarts (the CVE refs are in its database). Restart it once the first VT load is done.
+loaded=no
 for i in $(seq 1 240); do
-  if compose logs gvmd 2>/dev/null | grep -q "Updating VTs in database ... done"; then break; fi
+  if compose logs gvmd 2>/dev/null | log_contains "Updating VTs in database ... done"; then loaded=yes; break; fi
   sleep 10
 done
+if [ "$loaded" != yes ]; then
+  echo "gvmd did not finish loading the vulnerability tests within 40 minutes" >&2
+  exit 2
+fi
 sleep 60      # discovery VTs and EPSS assignment follow the VT load
 compose restart gvmd
 sleep 60

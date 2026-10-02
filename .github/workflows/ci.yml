@@ -79,6 +79,7 @@ jobs:
             out/*.md
             out/*.json
             out/*.html
+            out/*.txt
             out/intel/
           if-no-files-found: ignore
 

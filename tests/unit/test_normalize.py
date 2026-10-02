@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
 
 import pytest
@@ -45,7 +46,7 @@ def test_unfinished_scan_is_an_error(fixtures, assets):
 
 
 def test_host_missing_from_the_report_is_an_error(fixtures, assets):
-    xml = v1(fixtures).replace(b'<host><ip>172.30.0.13</ip><asset asset_id=""/></host>', b"")
+    xml = re.sub(rb"<host><ip>172\.30\.0\.13</ip>.*?</host>", b"", v1(fixtures))
     with pytest.raises(ReportError, match="db \\(172.30.0.13\\) is missing from the report"):
         parse_report(xml, assets)
 
@@ -61,3 +62,26 @@ def test_not_a_report(assets):
         parse_report(b"<get_reports_response/>", assets)
     with pytest.raises(ReportError, match="not XML"):
         parse_report(b"not xml", assets)
+
+
+def test_host_without_ssh_login_is_an_error(fixtures, assets):
+    # Network results alone keep a host in the report; without the login its package findings would look fixed.
+    xml = v1(fixtures).replace(b"<name>Auth-SSH-Success</name>", b"<name>Auth-SSH-Failure</name>", 1)
+    with pytest.raises(ReportError, match="web \\(172.30.0.11\\): authenticated checks did not run"):
+        parse_report(xml, assets)
+
+
+def test_ssh_login_without_local_checks_is_an_error(fixtures, assets):
+    # Seen in CI: the files container stopped mid-scan; the login succeeded, every command returned nothing.
+    xml = re.sub(
+        rb"(<ip>172\.30\.0\.12</ip>.*?)<detail><name>Running-Kernel</name>.*?</detail>", rb"\1", v1(fixtures), count=1
+    )
+    with pytest.raises(ReportError, match="files \\(172.30.0.12\\): authenticated checks did not run"):
+        parse_report(xml, assets)
+
+
+def test_failed_login_is_an_error_even_with_a_success_detail(fixtures, assets):
+    failure = b"<detail><name>Auth-SSH-Failure</name><value>Protocol SSH, Port 22, User scan</value></detail>"
+    xml = v1(fixtures).replace(b"</detail></host>", b"</detail>" + failure + b"</host>", 1)
+    with pytest.raises(ReportError, match="authenticated checks did not run"):
+        parse_report(xml, assets)
