@@ -28,7 +28,7 @@ def test_keeps_findings_without_cve_and_sorts_cves(fixtures, assets):
     found = {f.oid: f for f in parse_report(v1(fixtures), assets).findings}
     assert found["1.3.6.1.4.1.25623.1.0.900600"].cves == ()
     assert found["1.3.6.1.4.1.25623.1.0.900600"].solution == "Disable anonymous logins <if not required>."
-    assert found["1.3.6.1.4.1.25623.1.1.2.2024.5770"].cves == ("CVE-2024-45491", "CVE-2024-45492")
+    assert found["1.3.6.1.4.1.25623.1.1.1.1.2024.5770"].cves == ("CVE-2024-45491", "CVE-2024-45492")
 
 
 def test_drops_log_and_low_quality_results(fixtures, assets):

@@ -10,7 +10,7 @@ from vulnmgmt.prioritize import prioritize_all
 from vulnmgmt.tracker import build, gating, read_csv, to_markdown, update, write_csv
 
 FTP = "1.3.6.1.4.1.25623.1.0.900600"
-NGINX = "1.3.6.1.4.1.25623.1.1.2.2024.5755"
+NGINX = "1.3.6.1.4.1.25623.1.1.1.1.2024.5755"
 
 
 def items(fixtures, assets, policy, name):
@@ -28,7 +28,7 @@ def cycle(fixtures, assets, policy, exceptions=()):
 def test_first_scan_opens_rows_with_sla_due_dates(fixtures, assets, policy):
     rows, _ = cycle(fixtures, assets, policy)
     by_oid = {r.oid: r for r in rows}
-    glibc = by_oid["1.3.6.1.4.1.25623.1.1.2.2023.5514"]
+    glibc = by_oid["1.3.6.1.4.1.25623.1.1.1.1.2023.5514"]
     assert (glibc.status, glibc.priority, glibc.due, glibc.owner, glibc.kev) == (
         "open",
         "P1",
@@ -46,8 +46,8 @@ def test_rescan_fixes_keeps_and_adds(fixtures, assets, policy):
     status = {r.oid: r.status for r in after}
     assert status[NGINX] == "open"
     assert status["1.3.6.1.4.1.25623.1.0.999001"] == "new"
-    assert status["1.3.6.1.4.1.25623.1.1.2.2023.5514"] == "fixed"
-    fixed = next(r for r in after if r.oid == "1.3.6.1.4.1.25623.1.1.2.2023.5514")
+    assert status["1.3.6.1.4.1.25623.1.1.1.1.2023.5514"] == "fixed"
+    fixed = next(r for r in after if r.oid == "1.3.6.1.4.1.25623.1.1.1.1.2023.5514")
     assert fixed.closed == "2026-10-01T18:40:00+00:00"
     assert gating(after, policy) == []
 
@@ -62,7 +62,7 @@ def test_valid_exception_accepts_risk_and_leaves_the_gate(fixtures, assets, poli
 
 def test_expired_exception_reopens_and_gates(fixtures, assets, policy):
     first, before = items(fixtures, assets, policy, "report-v1.xml")
-    expired = RiskAcceptance("web", "1.3.6.1.4.1.25623.1.1.2.2023.5514", "legacy", "CISO", date(2026, 9, 30))
+    expired = RiskAcceptance("web", "1.3.6.1.4.1.25623.1.1.1.1.2023.5514", "legacy", "CISO", date(2026, 9, 30))
     rows = build(before, first.started, policy, [expired])
     row = next(r for r in rows if r.oid.endswith("2023.5514"))
     assert (row.status, row.note) == ("reopened", "exception expired 2026-09-30")

@@ -56,10 +56,10 @@ def test_gate_fails_on_open_p1(fixtures, tmp_path: Path, capsys):
 
 
 GATING = [
-    ("web", "1.3.6.1.4.1.25623.1.1.2.2023.5514"),
-    ("web", "1.3.6.1.4.1.25623.1.1.2.2024.5724"),
-    ("db", "1.3.6.1.4.1.25623.1.1.2.2024.5812"),
-    ("db", "1.3.6.1.4.1.25623.1.1.2.2024.5770"),
+    ("web", "1.3.6.1.4.1.25623.1.1.1.1.2023.5514"),
+    ("web", "1.3.6.1.4.1.25623.1.1.1.1.2024.5724"),
+    ("db", "1.3.6.1.4.1.25623.1.1.1.1.2024.5812"),
+    ("db", "1.3.6.1.4.1.25623.1.1.1.1.2024.5770"),
 ]
 
 
@@ -98,7 +98,7 @@ def test_valid_exceptions_pass_the_gate(fixtures, tmp_path: Path):
 
 def test_one_expired_exception_fails_the_gate(fixtures, tmp_path: Path, capsys):
     assert gate_with_exceptions(fixtures, tmp_path, "2026-09-30") == 1
-    assert "reopened db 1.3.6.1.4.1.25623.1.1.2.2024.5770" in capsys.readouterr().err
+    assert "reopened db 1.3.6.1.4.1.25623.1.1.1.1.2024.5770" in capsys.readouterr().err
 
 
 def test_bad_report_exits_two(fixtures, tmp_path: Path, capsys):
