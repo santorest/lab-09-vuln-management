@@ -1,3 +1,9 @@
 # Risk acceptances: host name (from assets.csv), Greenbone NVT OID, reason, approver role, expiry (YYYY-MM-DD).
 # An expired acceptance reopens the finding.
-exceptions: []
+exceptions:
+  # DEMO (not to merge): an acceptance that expired before the run, for a finding the rescan still reports.
+  - host: web
+    oid: 1.3.6.1.4.1.25623.1.1.1.1.2023.5514     # Debian DSA-5514-1, glibc, CVE-2023-4911 (in CISA KEV)
+    reason: "glibc upgrade postponed until the web tier's maintenance window"
+    approver: security lead
+    expires: 2026-09-30
