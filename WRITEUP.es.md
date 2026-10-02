@@ -48,9 +48,11 @@ una fecha de vencimiento. Este laboratorio construye ese proceso de principio a 
 - **La política como archivos.** `policy/policy.yaml` contiene la frecuencia, los días de SLA por prioridad, el piso de
   CVSS y los umbrales; `policy/exceptions.yaml` contiene las aceptaciones de riesgo. `docs/policy.md` dice lo mismo en
   prosa.
-- **Sin pérdida silenciosa de cobertura.** Un escaneo que no termina, un tiempo de espera agotado o un host del
-  inventario ausente del reporte es un error (código 2), nunca "0 hallazgos". Un nuevo escaneo que se saltara un host
-  sin avisar parecería una corrección perfecta.
+- **Sin pérdida silenciosa de cobertura.** Un escaneo que no termina, un tiempo de espera agotado, un host del
+  inventario ausente del reporte, un host cuyas comprobaciones autenticadas no se ejecutaron (sin inicio de sesión
+  SSH, o sin salida de sus comandos), un host que se detuvo durante el escaneo o resultados de paquetes sin ningún CVE
+  son errores (código 2), nunca "0 hallazgos". Un nuevo escaneo que se saltara un host sin avisar, o que solo lo viera
+  desde la red, parecería una corrección perfecta.
 - **Greenbone en CI.** Los contenedores de la comunidad se ejecutan sin la interfaz web; el feed es un conjunto de
   imágenes de datos fijadas por digest, así que una ejecución no depende de una sincronización en vivo. La orquestación
   habla GMP por el socket Unix de gvmd con python-gvm: espera a que el escáner y la configuración "Full and fast" estén

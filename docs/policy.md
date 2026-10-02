@@ -33,13 +33,16 @@ that first found the finding plus:
 | P3 | 90 |
 | P4 | 180 |
 
-Findings with CVSS below **4.0** (the floor) are tracked as informational: they get no due date and never gate.
+Findings with CVSS below **4.0** (the floor) are tracked as informational, with no due date and never gating, unless
+a CVE of theirs is in KEV or has EPSS ≥ 0.10: exploitation outranks severity, so such a finding is prioritized
+whatever its CVSS (the published run has CVSS 2.1 findings at P3 for that reason).
 
 ## What "fixed" means
 
 A finding is fixed when the rescan of the same host, with the same scan configuration and credentials, no longer
-reports the same Greenbone check. A host that could not be scanned proves nothing, which is why a missing host is an
-error rather than an empty result.
+reports the same Greenbone check. A host that could not be scanned proves nothing, which is why a missing host, or a
+host whose authenticated checks did not run (no SSH login, or no output from its commands), is an error rather than
+an empty result.
 
 ## Exceptions (risk acceptance)
 

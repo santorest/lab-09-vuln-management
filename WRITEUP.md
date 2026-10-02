@@ -45,9 +45,10 @@ purpose, with a name and an expiry. This lab builds that process end to end and 
   exposure. The scan targets exactly that list.
 - **Policy as files.** `policy/policy.yaml` holds the frequency, the SLA days per priority, the CVSS floor and the
   thresholds; `policy/exceptions.yaml` holds risk acceptances. `docs/policy.md` says the same in prose.
-- **No silent coverage loss.** A scan that does not finish, a timeout, or an inventory host missing from the report
-  is an error (exit 2), never "0 findings". A rescan that silently missed a host would otherwise look like a perfect
-  remediation.
+- **No silent coverage loss.** A scan that does not finish, a timeout, an inventory host missing from the report, a
+  host whose authenticated checks did not run (no SSH login, or no output from its commands), a host that stopped
+  during the scan, or package results without any CVE are errors (exit 2), never "0 findings". A rescan that silently
+  missed a host, or saw it only from the network, would otherwise look like a perfect remediation.
 - **Greenbone in CI.** The community containers run without the web UI; the feed is a set of data images pinned by
   digest, so a run does not depend on a live feed sync. The orchestration talks GMP over gvmd's Unix socket with
   python-gvm: it waits until the scanner and the "Full and fast" configuration are ready, creates a throwaway SSH

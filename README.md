@@ -16,8 +16,9 @@ report before/after metrics. One policy, one formula, and every number can be tr
 2. **Scan** all three hosts in one Greenbone task ("Full and fast"): over the network and authenticated over SSH with
    a throwaway key, so the local security checks compare the installed packages against Debian advisories.
 3. **Normalize** the XML report into findings per host. Log-only results and results with a quality of detection
-   below 70 are skipped. A scan that did not finish, a host from the inventory missing from the report or stopped
-   during the scan, or package results without any CVE reference are errors (exit 2), never "0 findings".
+   below 70 are skipped. A scan that did not finish, a host from the inventory missing from the report, stopped during
+   the scan or without working authenticated checks, or package results without any CVE reference are errors
+   (exit 2), never "0 findings".
 4. **Enrich** the CVEs with FIRST EPSS scores and the CISA KEV catalog, fetched during the run and saved with their
    dates next to the reports.
 5. **Prioritize** each finding P1–P4 (or informational) with the formula in
@@ -60,7 +61,7 @@ Details in [`docs/policy.md`](docs/policy.md); values in [`policy/policy.yaml`](
 | P2 | 30 | yes |
 | P3 | 90 | no |
 | P4 | 180 | no |
-| informational (CVSS below 4.0) | — | no |
+| informational (CVSS below 4.0, not in KEV, EPSS below 0.10) | — | no |
 
 Exceptions (risk acceptances) live in [`policy/exceptions.yaml`](policy/exceptions.yaml): host, Greenbone check,
 reason, approver role and expiry. An expired exception reopens the finding.
