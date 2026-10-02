@@ -112,12 +112,27 @@ Results are added from the first CI runs.
   before it started on the vulnerability tests, and the scan configurations only exist after those. The findings do
   not need SCAP or CERT data (the CVE references come with the tests, EPSS and KEV come from this toolkit), so the
   lab does not load them.
+- **An authenticated scan fails quietly.** The first scan finished "Done" with only network results: Greenbone could
+  not log in. Two OpenSSH rules were in the way: without PAM, sshd refuses key logins to an account created by
+  `useradd` (its password field is `!`, "locked"), and `StrictModes` rejects an `authorized_keys` file owned by
+  anyone but root or the user (it was bind-mounted from the runner). The report said so in a log-level result,
+  "SSH Login Failed For Authenticated Checks", that no severity filter would ever surface.
+- **The data can be in the database and still missing from the API.** With the logins fixed, 75 Debian advisories
+  were found but none carried a CVE, so EPSS and KEV had nothing to score. gvmd's database held the CVE references;
+  its in-memory cache of the tests, built when gvmd started on an empty database, did not, and every GMP answer
+  came back with empty `<refs/>`. The cycle now restarts gvmd once the first load is done, and a scan whose package
+  results carry no CVE at all is an error instead of a clean run.
+- **A dead host looks like a clean host.** The file server reported a successful SSH login and then nothing: its
+  container had stopped, because vsftpd was its main process and crashed on Greenbone's FTP probes. sshd is now the
+  main process, vsftpd is restarted if it dies, and the cycle fails if any host stops during a scan.
 - **Check the library, not the docs you remember.** The first spike would have failed at import: the python-gvm
   transform is `EtreeCheckCommandTransform`. mypy found it before CI did.
 
 ## 9. Limits
 
 - Containers, not real hosts; no real network is scanned.
+- The containers share the runner's kernel, so kernel findings (missing CPU-vulnerability mitigations) stay open after
+  remediation: rebuilding an image cannot fix them.
 - The Greenbone community feed is a pinned snapshot; the SCAP and CERT feeds are not loaded.
 - EPSS and KEV are fetched on the run date, so a later run may prioritize the same finding differently; each run saves
   the snapshots it used.

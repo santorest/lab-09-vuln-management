@@ -11,12 +11,13 @@ report before/after metrics. One policy, one formula, and every number can be tr
 ![Architecture](diagrams/architecture.png)
 
 1. **Start** Greenbone Community Edition (scanner core, no web UI, every image pinned by digest) and fleet **v1**:
-   three Debian 12.0 containers whose packages come from the 2023-06-15 Debian snapshot.
+   three Debian 12.0 containers whose packages come from the 2023-06-15 Debian snapshot. Once gvmd has loaded the
+   vulnerability tests it is restarted, so its in-memory cache includes their CVE references.
 2. **Scan** all three hosts in one Greenbone task ("Full and fast"): over the network and authenticated over SSH with
    a throwaway key, so the local security checks compare the installed packages against Debian advisories.
 3. **Normalize** the XML report into findings per host. Log-only results and results with a quality of detection
-   below 70 are skipped; a scan that did not finish, or a host from the inventory missing from the report, is an
-   error (exit 2), never "0 findings".
+   below 70 are skipped. A scan that did not finish, a host from the inventory missing from the report or stopped
+   during the scan, or package results without any CVE reference are errors (exit 2), never "0 findings".
 4. **Enrich** the CVEs with FIRST EPSS scores and the CISA KEV catalog, fetched during the run and saved with their
    dates next to the reports.
 5. **Prioritize** each finding P1–P4 (or informational) with the formula in
@@ -103,6 +104,8 @@ pass all four jobs.
 ## Limits
 
 - Containers, not real hosts; no real network is scanned.
+- The containers share the runner's kernel, so kernel findings (missing CPU-vulnerability mitigations) stay open after
+  remediation: rebuilding an image cannot fix them.
 - The Greenbone community feed is a pinned snapshot (data images by digest), not a live sync. The SCAP and CERT
   feeds are not loaded: gvmd loads them before the vulnerability tests (about 38 minutes on a runner) and the
   findings do not need them (CVE references come from the vulnerability tests).

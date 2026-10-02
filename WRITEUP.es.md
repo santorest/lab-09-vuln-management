@@ -116,12 +116,30 @@ Los resultados se agregan a partir de las primeras ejecuciones de CI.
   antes de empezar con las pruebas de vulnerabilidades, y las configuraciones de escaneo solo existen después de
   ellas. Los hallazgos no necesitan datos SCAP ni CERT (las referencias a CVE vienen con las pruebas; EPSS y KEV los
   aporta esta herramienta), así que el laboratorio no los carga.
+- **Un escaneo autenticado falla en silencio.** El primer escaneo terminó en "Done" solo con resultados de red:
+  Greenbone no pudo iniciar sesión. Dos reglas de OpenSSH lo impedían: sin PAM, sshd rechaza el inicio de sesión
+  con clave de una cuenta creada con `useradd` (su campo de contraseña es `!`, "bloqueada"), y `StrictModes` rechaza
+  un archivo `authorized_keys` cuyo dueño no sea root ni el usuario (estaba montado desde el runner). El reporte lo
+  decía en un resultado de nivel log, "SSH Login Failed For Authenticated Checks", que ningún filtro por severidad
+  habría mostrado.
+- **Los datos pueden estar en la base de datos y aun así faltar en la API.** Con el inicio de sesión corregido
+  aparecieron 75 avisos de Debian, pero ninguno traía un CVE, así que EPSS y KEV no tenían nada que puntuar. La base
+  de datos de gvmd tenía las referencias a CVE; su caché en memoria de las pruebas, construida cuando gvmd arrancó con
+  la base vacía, no, y cada respuesta GMP llegaba con `<refs/>` vacío. El ciclo ahora reinicia gvmd cuando termina la
+  primera carga, y un escaneo cuyos resultados de paquetes no traen ningún CVE es un error en lugar de una ejecución
+  limpia.
+- **Un host caído parece un host limpio.** El servidor de archivos reportó un inicio de sesión SSH exitoso y luego
+  nada: su contenedor se había detenido, porque vsftpd era el proceso principal y falló con las sondas FTP de
+  Greenbone. Ahora sshd es el proceso principal, vsftpd se reinicia si muere y el ciclo falla si algún host se detiene
+  durante un escaneo.
 - **Revisar la biblioteca, no la documentación que se recuerda.** El primer spike habría fallado al importar: la
   transformación de python-gvm se llama `EtreeCheckCommandTransform`. mypy lo encontró antes que CI.
 
 ## 9. Límites
 
 - Contenedores, no hosts reales; no se escanea ninguna red real.
+- Los contenedores comparten el kernel del runner, así que los hallazgos del kernel (mitigaciones de vulnerabilidades
+  de CPU ausentes) siguen abiertos tras la corrección: reconstruir una imagen no puede corregirlos.
 - El feed comunitario de Greenbone es un snapshot fijado; los feeds SCAP y CERT no se cargan.
 - EPSS y KEV se consultan en la fecha de la ejecución, así que una ejecución posterior puede priorizar el mismo
   hallazgo de otra forma; cada ejecución guarda los snapshots que usó.
