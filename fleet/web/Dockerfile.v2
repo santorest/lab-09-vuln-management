@@ -1,8 +1,11 @@
-# Remediated: current Debian 12 packages and security updates; nginx no longer advertises its version.
+# DEMO (not to merge): remediated, except that glibc is held back at the v1 version 2.36-9 ("skipped upgrade").
 FROM debian:12@sha256:f37a335e82bca302e955fa39f9dfe28f1be618f016f8a2b56318e5a5111afc26
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openssh-server nginx \
+ && echo "deb http://snapshot.debian.org/archive/debian/20230615T000000Z bookworm main" > /etc/apt/sources.list.d/snapshot.list \
+ && apt-get -o Acquire::Check-Valid-Until=false update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-downgrades libc6=2.36-9 libc-bin=2.36-9 \
  && rm -rf /var/lib/apt/lists/* \
  && useradd --create-home --shell /bin/bash scan \
  && usermod --password '*' scan \
