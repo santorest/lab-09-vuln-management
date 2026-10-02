@@ -25,7 +25,7 @@ bundle: "Published on the portfolio site with its SHA-256 checksum"
 | **Role played** | Security engineer setting up a vulnerability-management process for a small fleet |
 | **Environment** | Public GitHub repository, GitHub-hosted Ubuntu runners, Greenbone Community Edition containers, three Debian 12 containers |
 | **Tools** | Greenbone CE (gvmd, ospd-openvas, openvasd), python-gvm, Python 3.12, FIRST EPSS API, CISA KEV catalog, pytest, ruff, mypy, gitleaks |
-| **Deliverable** | Scan orchestration, normalization, prioritization, tracker, metrics and report toolkit; policy files; fleet before/after images; CI with a gate; branch ruleset; demo PRs |
+| **Deliverable** | Scan orchestration, normalization, prioritization, tracker, metrics and report toolkit; policy files; fleet before/after images; CI with a gate; branch ruleset |
 
 ---
 
@@ -104,7 +104,43 @@ requires a pull request and all four jobs.
 
 ## 7. Results
 
-Results are added from the first CI runs.
+From the first complete CI run on `main`,
+[run 36951611428](https://github.com/santorest/lab-09-vuln-management/actions/runs/36951611428) (2026-10-02). The
+next push ([run 36954263327](https://github.com/santorest/lab-09-vuln-management/actions/runs/36954263327)) produced
+exactly the same numbers. `docs/example-report.html` and `docs/example-tracker.md` are that run's report and tracker.
+
+| | |
+|---|---|
+| Greenbone | gvmd 26.40.2; "Full and fast" with 188,961 vulnerability tests; feed images pinned by digest (`vulnerability-tests@sha256:86a44fb7a9f9…`, `notus-data@sha256:f53836e6ac0e…`) |
+| Scans | v1 8 min 50 s, v2 8 min 50 s; v1 report 202 results, v2 94 (QoD ≥ 70) |
+| Enrichment | EPSS of 2026-10-01: 163 of 163 CVEs scored; CISA KEV catalog 2026.10.01: 1 of them listed |
+| Whole job | 31 minutes (47 on the second run), including starting Greenbone and loading the feed |
+
+**Findings by host and priority** (one row per host and Greenbone check; informational rows not counted):
+
+| Host | Criticality / exposure | P1 | P2 | P3 | P4 | In KEV | EPSS ≥ 0.10 | Open after v2 |
+|---|---|---|---|---|---|---|---|---|
+| `web` | 3, internet-facing | 4 | 13 | 4 | 16 | 1 | 8 | P3 2, P4 1 |
+| `files` | 2, internal | 4 | 3 | 10 | 17 | 1 | 8 | P3 2, P4 1 |
+| `db` | 3, internal | 4 | 17 | 4 | 19 | 1 | 8 | P3 2, P4 1 |
+| **Total** | | **12** | **33** | **18** | **52** | **3** | **24** | **P3 6, P4 3** |
+
+- **Fixed 106 of 115 (92.2 %)**, none new, none risk-accepted or reopened; mean time to fix 9.5 minutes (scan to
+  rescan inside the run). The gate passed: no P1 or P2 open.
+- **The four P1s are the same on every host:** glibc DSA-5514 (CVE-2023-4911, the one KEV entry: P1 by rule 1),
+  openssh DSA-5724 (CVE-2024-6387, EPSS 0.995), and openssl DSA-5764 (EPSS 0.67) and DSA-6113 (EPSS 0.52), each with
+  CVSS ≥ 7.0 (rule 2).
+- **Criticality moved findings.** The same CVSS ≥ 7.0 advisories are P2 on `web` and `db` (criticality 3) and P3 on
+  `files` (criticality 2, internal): 3 P2 there against 13 and 17.
+- **What stayed open is outside the images.** On each host: missing kernel mitigations for Speculative Store Bypass
+  (P3, its CVE has EPSS 0.61) and for Speculative Return Stack Overflow (P4) — the containers share the runner's
+  kernel — and the ICMP timestamp reply (CVSS 2.1, but P3 because its CVE has EPSS 0.32: rule 7 working as written,
+  and a reminder that EPSS scores the CVE, not this particular exposure).
+- **Configuration findings were fixed by configuration.** Anonymous FTP and cleartext FTP login on `files` (P4) were
+  found on v1 and gone on v2.
+- **The gate is unit-tested, not demonstrated.** An open P1/P2 and an expired exception that reopens a row are covered
+  by unit tests, and the ruleset makes the `scan` job a required check, so a pull request that leaves a P1 or P2 open
+  cannot be merged. No demo pull request was run against it.
 
 ## 8. Lessons
 
