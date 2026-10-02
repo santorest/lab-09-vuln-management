@@ -4,7 +4,7 @@ import pytest
 from gvm.errors import GvmError
 from lxml import etree
 
-from vulnmgmt.scan import ScanError, Timeouts, run_scan, wait_until_ready
+from vulnmgmt.scan import ScanError, Timeouts, require_cve_refs, run_scan, wait_until_ready
 
 
 class Clock:
@@ -105,3 +105,29 @@ def test_scan_timeout_is_an_error(assets):
     clock, gmp = Clock(), FakeGmp(statuses=("Running",))
     with pytest.raises(ScanError, match="scan not finished after 3000 s"):
         run_scan(gmp, assets, "KEY", "v1", Timeouts(), clock, clock.sleep)
+
+
+def _report(*results: str) -> bytes:
+    return (
+        "<get_reports_response><report><report><results>" + "".join(results) + "</results></report></report>"
+        "</get_reports_response>"
+    ).encode()
+
+
+def _lsc(refs: str) -> str:
+    family = "<family>Debian Local Security Checks</family>"
+    return f"<result><nvt oid='1.3.6.1.4.1.25623.1.1.1.1.2023.5514'>{family}{refs}</nvt></result>"
+
+
+def test_package_results_without_cve_refs_are_an_error():
+    # gvmd answered every GMP call with <refs/> while its VT cache was stale: the CVEs exist, the report lost them.
+    with pytest.raises(ScanError, match="no CVE references"):
+        require_cve_refs(_report(_lsc("<refs/>")))
+
+
+def test_package_results_with_cve_refs_pass():
+    require_cve_refs(_report(_lsc("<refs><ref type='cve' id='CVE-2023-4911'/></refs>")))
+
+
+def test_reports_without_package_results_pass():
+    require_cve_refs(_report("<result><nvt oid='1.3.6.1.4.1.25623.1.0.80091'><family>General</family></nvt></result>"))

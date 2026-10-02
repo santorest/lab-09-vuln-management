@@ -89,7 +89,18 @@ def run_scan(
         report_id, filter_string=REPORT_FILTER, report_format_id=XML_REPORT, ignore_pagination=True, details=True
     )
     xml: bytes = etree.tostring(report)
+    require_cve_refs(xml)
     return xml
+
+
+def require_cve_refs(xml: bytes) -> None:
+    """Package advisories always reference CVEs. If they arrive without, gvmd's VT cache was stale (it answers
+    <refs/> although the refs are in its database) and every finding would lose EPSS and KEV: fail instead."""
+    root = etree.fromstring(xml)
+    results = root.iterfind(".//results/result")
+    lsc = [r for r in results if (r.findtext("nvt/family") or "").endswith("Local Security Checks")]
+    if lsc and not any(r.find("nvt/refs/ref[@type='cve']") is not None for r in lsc):
+        raise ScanError(f"{len(lsc)} package results but no CVE references: restart gvmd after the VT update")
 
 
 def scan(

@@ -14,9 +14,25 @@ for i in $(seq 1 90); do
 done
 compose exec -T -u gvmd gvmd gvmd --user=admin --new-password="$GVM_PASSWORD" >/dev/null
 
+# gvmd builds its in-memory VT cache at start, while its database has no VTs yet, and answers every GMP request
+# with empty <refs/> until it restarts (the CVE refs are in its database). Restart it once the first VT load is done.
+for i in $(seq 1 240); do
+  if compose logs gvmd 2>/dev/null | grep -q "Updating VTs in database ... done"; then break; fi
+  sleep 10
+done
+sleep 60      # discovery VTs and EPSS assignment follow the VT load
+compose restart gvmd
+sleep 60
+
 scan() {
   FLEET_VERSION="$1" compose --profile tools run --rm --build runner \
     vulnmgmt scan --assets /policy/assets.csv --key /out/keys/scan_key --name "$1" --out "/out/report-$1.xml"
+  # A host that stopped during the scan answers nothing over SSH, so its report would look clean. Fail instead.
+  running=$(FLEET_VERSION="$1" compose ps --status running --services web files db | sort | tr '\n' ' ')
+  if [ "$running" != "db files web " ]; then
+    echo "fleet $1: a host stopped during the scan (running: $running)" >&2
+    exit 2
+  fi
 }
 scan v1
 FLEET_VERSION=v2 compose up -d --build web files db      # remediated images, same addresses
