@@ -26,7 +26,7 @@ bundle: "Publicado en el sitio del portafolio con su checksum SHA-256"
 | **Rol** | Ingeniero de seguridad que monta un proceso de gestión de vulnerabilidades para una flota pequeña |
 | **Entorno** | Repositorio público de GitHub, runners Ubuntu de GitHub, contenedores de Greenbone Community Edition, tres contenedores Debian 12 |
 | **Herramientas** | Greenbone CE (gvmd, ospd-openvas, openvasd), python-gvm, Python 3.12, API de EPSS de FIRST, catálogo KEV de CISA, pytest, ruff, mypy, gitleaks |
-| **Entregable** | Herramienta de orquestación del escaneo, normalización, priorización, seguimiento, métricas y reporte; archivos de política; imágenes de la flota antes y después; CI con compuerta; ruleset de rama; PR de demostración |
+| **Entregable** | Herramienta de orquestación del escaneo, normalización, priorización, seguimiento, métricas y reporte; archivos de política; imágenes de la flota antes y después; CI con compuerta; ruleset de rama |
 
 ---
 
@@ -108,7 +108,47 @@ ruleset en `main` exige pull request y los cuatro jobs.
 
 ## 7. Resultados
 
-Los resultados se agregan a partir de las primeras ejecuciones de CI.
+De la primera ejecución completa de CI en `main`,
+[ejecución 36951611428](https://github.com/santorest/lab-09-vuln-management/actions/runs/36951611428) (2026-10-02). El
+siguiente push ([ejecución 36954263327](https://github.com/santorest/lab-09-vuln-management/actions/runs/36954263327))
+produjo exactamente los mismos números. `docs/example-report.html` y `docs/example-tracker.md` son el reporte y el
+seguimiento de esa ejecución.
+
+| | |
+|---|---|
+| Greenbone | gvmd 26.40.2; "Full and fast" con 188.961 pruebas de vulnerabilidades; imágenes del feed fijadas por digest (`vulnerability-tests@sha256:86a44fb7a9f9…`, `notus-data@sha256:f53836e6ac0e…`) |
+| Escaneos | v1 8 min 50 s, v2 8 min 50 s; reporte v1 con 202 resultados, v2 con 94 (QoD ≥ 70) |
+| Enriquecimiento | EPSS del 2026-10-01: 163 de 163 CVE con puntaje; catálogo CISA KEV 2026.10.01: 1 de ellos listado |
+| Job completo | 31 minutos (47 en la segunda ejecución), incluido el arranque de Greenbone y la carga del feed |
+
+**Hallazgos por host y prioridad** (una fila por host y prueba de Greenbone; sin contar las filas informativas):
+
+| Host | Criticidad / exposición | P1 | P2 | P3 | P4 | En KEV | EPSS ≥ 0,10 | Abiertos tras v2 |
+|---|---|---|---|---|---|---|---|---|
+| `web` | 3, expuesto a internet | 4 | 13 | 4 | 16 | 1 | 8 | P3 2, P4 1 |
+| `files` | 2, interno | 4 | 3 | 10 | 17 | 1 | 8 | P3 2, P4 1 |
+| `db` | 3, interno | 4 | 17 | 4 | 19 | 1 | 8 | P3 2, P4 1 |
+| **Total** | | **12** | **33** | **18** | **52** | **3** | **24** | **P3 6, P4 3** |
+
+- **Corregidos 106 de 115 (92,2 %)**, ninguno nuevo, ninguno con riesgo aceptado ni reabierto; tiempo medio de
+  corrección 9,5 minutos (del escaneo al nuevo escaneo dentro de la ejecución). La compuerta pasó: ningún P1 ni P2
+  abierto.
+- **Los cuatro P1 son los mismos en cada host:** glibc DSA-5514 (CVE-2023-4911, la única entrada de KEV: P1 por la
+  regla 1), openssh DSA-5724 (CVE-2024-6387, EPSS 0,995) y openssl DSA-5764 (EPSS 0,67) y DSA-6113 (EPSS 0,52), cada
+  uno con CVSS ≥ 7,0 (regla 2).
+- **La criticidad movió hallazgos.** Los mismos avisos con CVSS ≥ 7,0 son P2 en `web` y `db` (criticidad 3) y P3 en
+  `files` (criticidad 2, interno): 3 P2 allí frente a 13 y 17.
+- **Lo que quedó abierto está fuera de las imágenes.** En cada host: mitigaciones del kernel ausentes para
+  Speculative Store Bypass (P3, su CVE tiene EPSS 0,61) y para Speculative Return Stack Overflow (P4) —los
+  contenedores comparten el kernel del runner— y la respuesta ICMP timestamp (CVSS 2,1, pero P3 porque su CVE tiene
+  EPSS 0,32: la regla 7 funcionando tal como está escrita, y un recordatorio de que EPSS puntúa el CVE, no esta
+  exposición en particular).
+- **Los hallazgos de configuración se corrigieron con configuración.** El FTP anónimo y el inicio de sesión FTP en
+  texto claro en `files` (P4) aparecieron en v1 y desaparecieron en v2.
+- **La compuerta está probada con tests unitarios, no demostrada.** Un P1/P2 abierto y una excepción vencida que
+  reabre una fila están cubiertos por tests unitarios, y el ruleset hace del job `scan` un check obligatorio, así que
+  un pull request que deje abierto un P1 o P2 no se puede fusionar. No se ejecutó ningún pull request de demostración
+  contra ella.
 
 ## 8. Lecciones
 
