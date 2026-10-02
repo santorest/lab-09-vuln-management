@@ -4,7 +4,7 @@ Scan a small fleet of deliberately outdated lab hosts with Greenbone, prioritize
 CISA KEV + asset criticality under a written policy, track remediation with SLA due dates, remediate, rescan and
 report before/after metrics. One policy, one formula, and every number can be traced back to what the run saved.
 
-**Status: in progress.** Every result comes from GitHub Actions runs against containers; no real network is scanned.
+**Status: completed.** Every result comes from GitHub Actions runs against containers; no real network is scanned.
 
 ## How it works
 

@@ -3,7 +3,7 @@ title: "Flujo de gestión de vulnerabilidades (Greenbone, EPSS, KEV)"
 id: "lab-09-vuln-management"
 category: "Evaluación de vulnerabilidades y pentesting"
 type: "Laboratorio"
-status: "en curso"
+status: "completado"
 date: "2026-10-01"
 time_to_reproduce: "Una ejecución de CI (fork, activar Actions, ejecutar CI); la duración medida está en los Resultados"
 skills: [Greenbone, OpenVAS, Python, python-gvm, EPSS, CISA KEV, CVSS, Docker, Debian, GitHub Actions]
@@ -115,7 +115,10 @@ De la primera ejecución completa de CI en `main`,
 [ejecución 36951611428](https://github.com/santorest/lab-09-vuln-management/actions/runs/36951611428) (2026-10-02). El
 siguiente push ([ejecución 36954263327](https://github.com/santorest/lab-09-vuln-management/actions/runs/36954263327))
 produjo exactamente los mismos números. `docs/example-report.html` y `docs/example-tracker.md` son el reporte y el
-seguimiento de esa ejecución.
+seguimiento de esa ejecución. Tras las correcciones de la revisión final, la
+[ejecución 37009563738](https://github.com/santorest/lab-09-vuln-management/actions/runs/37009563738) (el mismo día,
+con un feed más nuevo: 189.015 pruebas) cumplió el nuevo requisito de comprobaciones autenticadas en los tres hosts y
+volvió a producir los mismos conteos; solo cambió el tiempo medio de corrección (8,5 minutos).
 
 | | |
 |---|---|
