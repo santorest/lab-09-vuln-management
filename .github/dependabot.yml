@@ -19,4 +19,5 @@ updates:
     schedule:
       interval: weekly
 # Not watched on purpose: fleet/*/Dockerfile.v1 is pinned to old images and package snapshots (the "as found"
-# state the lab scans), and the Greenbone digests in lab/compose.yaml are bumped by hand with a rescan.
+# state the lab scans), and the Greenbone software digests in lab/compose.yaml are bumped by hand with a rescan (the feed
+# data images follow :latest, see lab/compose.yaml).

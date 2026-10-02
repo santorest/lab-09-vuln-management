@@ -49,8 +49,8 @@ purpose, with a name and an expiry. This lab builds that process end to end and 
   host whose authenticated checks did not run (no SSH login, or no output from its commands), a host that stopped
   during the scan, or package results without any CVE are errors (exit 2), never "0 findings". A rescan that silently
   missed a host, or saw it only from the network, would otherwise look like a perfect remediation.
-- **Greenbone in CI.** The community containers run without the web UI; the feed is a set of data images pinned by
-  digest, so a run does not depend on a live feed sync. The orchestration talks GMP over gvmd's Unix socket with
+- **Greenbone in CI.** The community containers run without the web UI; the feed is a set of data images, not a live
+  sync; Greenbone keeps only their current version, so each run pulls the latest and records the digests it used. The orchestration talks GMP over gvmd's Unix socket with
   python-gvm: it waits until the scanner and the "Full and fast" configuration are ready, creates a throwaway SSH
   credential and one target, runs one task and downloads the XML report.
 
@@ -112,7 +112,7 @@ exactly the same numbers. `docs/example-report.html` and `docs/example-tracker.m
 
 | | |
 |---|---|
-| Greenbone | gvmd 26.40.2; "Full and fast" with 188,961 vulnerability tests; feed images pinned by digest (`vulnerability-tests@sha256:86a44fb7a9f9…`, `notus-data@sha256:f53836e6ac0e…`) |
+| Greenbone | gvmd 26.40.2; "Full and fast" with 188,961 vulnerability tests; feed images used by that run (`vulnerability-tests@sha256:86a44fb7a9f9…`, `notus-data@sha256:f53836e6ac0e…`) |
 | Scans | v1 8 min 50 s, v2 8 min 50 s; v1 report 202 results, v2 94 (QoD ≥ 70) |
 | Enrichment | EPSS of 2026-10-01: 163 of 163 CVEs scored; CISA KEV catalog 2026.10.01: 1 of them listed |
 | Whole job | 31 minutes (47 on the second run), including starting Greenbone and loading the feed |
@@ -162,6 +162,9 @@ exactly the same numbers. `docs/example-report.html` and `docs/example-tracker.m
 - **A dead host looks like a clean host.** The file server reported a successful SSH login and then nothing: its
   container had stopped, because vsftpd was its main process and crashed on Greenbone's FTP probes. sshd is now the
   main process, vsftpd is restarted if it dies, and the cycle fails if any host stops during a scan.
+- **A pin can expire.** The feed data images were pinned by digest like everything else; one day later the registry
+  answered "not found" for four of them. Greenbone rebuilds them daily and keeps only the current one, so the lab
+  now pins the software, pulls the current feed and records its digests with each run.
 - **Check the library, not the docs you remember.** The first spike would have failed at import: the python-gvm
   transform is `EtreeCheckCommandTransform`. mypy found it before CI did.
 
@@ -170,7 +173,8 @@ exactly the same numbers. `docs/example-report.html` and `docs/example-tracker.m
 - Containers, not real hosts; no real network is scanned.
 - The containers share the runner's kernel, so kernel findings (missing CPU-vulnerability mitigations) stay open after
   remediation: rebuilding an image cannot fix them.
-- The Greenbone community feed is a pinned snapshot; the SCAP and CERT feeds are not loaded.
+- The feed data images cannot be pinned (Greenbone deletes old versions within about a day); each run records the
+  digests it used, and a later run may use newer tests. The SCAP and CERT feeds are not loaded.
 - EPSS and KEV are fetched on the run date, so a later run may prioritize the same finding differently; each run saves
   the snapshots it used.
 - Time to remediate is measured in minutes inside one run, not in days.

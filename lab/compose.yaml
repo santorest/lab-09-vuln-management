@@ -1,24 +1,27 @@
 # Greenbone Community Edition (scanner core, no web UI) + the lab fleet, on one network.
-# Based on https://greenbone.github.io/docs/latest/_static/compose.yaml; every image pinned by digest.
+# Based on https://greenbone.github.io/docs/latest/_static/compose.yaml. Software images are pinned by digest. The four
+# feed data images (vulnerability-tests, notus-data, data-objects, report-formats) are pulled at their current version:
+# Greenbone rebuilds them daily and deletes old digests (a pin failed with "not found" one day later), so each run
+# records the digests it used in out/feed-images.txt instead.
 # No SCAP/CERT-Bund/DFN-CERT feeds: gvmd loads them before the VTs (~38 min on a runner) and the scan
 # does not need them (CVE refs come from the VTs; EPSS/KEV come from vulnmgmt's own snapshots).
 name: lab09
 
 services:
   vulnerability-tests:
-    image: registry.community.greenbone.net/community/vulnerability-tests@sha256:86a44fb7a9f9b982d521f98914aba98846f573b4f9ec9e8c1007c4866ec943af
+    image: registry.community.greenbone.net/community/vulnerability-tests:latest
     environment: {FEED_RELEASE: "24.10", KEEP_ALIVE: 1}
     volumes: [vt_data_vol:/mnt]
   notus-data:
-    image: registry.community.greenbone.net/community/notus-data@sha256:f53836e6ac0eb3abb7f5ab74ccf93b8317fedd2ba5cd293473cd307c148fc4c3
+    image: registry.community.greenbone.net/community/notus-data:latest
     environment: {KEEP_ALIVE: 1}
     volumes: [notus_data_vol:/mnt]
   data-objects:
-    image: registry.community.greenbone.net/community/data-objects@sha256:3ef69ac56aca55981f164e228eceab4116aa8e1a855e1a83d108f3621a83445f
+    image: registry.community.greenbone.net/community/data-objects:latest
     environment: {FEED_RELEASE: "24.10", KEEP_ALIVE: 1}
     volumes: [data_objects_vol:/mnt]
   report-formats:
-    image: registry.community.greenbone.net/community/report-formats@sha256:3b1352bec64190d2f8716fe1044d03d61da5b4863a99f78e856762bbf77e9d45
+    image: registry.community.greenbone.net/community/report-formats:latest
     environment: {FEED_RELEASE: "24.10", KEEP_ALIVE: 1}
     volumes: [data_objects_vol:/mnt]
     depends_on: {data-objects: {condition: service_healthy}}

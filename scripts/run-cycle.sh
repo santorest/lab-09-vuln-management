@@ -9,6 +9,10 @@ compose() { docker compose -f lab/compose.yaml "$@"; }
 mkdir -p out
 
 FLEET_VERSION=v1 compose up -d --build
+# The feed data images are pulled at their current version (lab/compose.yaml says why): record what this run used.
+for name in vulnerability-tests notus-data data-objects report-formats; do
+  docker image inspect --format '{{index .RepoDigests 0}}' "registry.community.greenbone.net/community/$name:latest"
+done | tee out/feed-images.txt
 for i in $(seq 1 90); do
   if compose exec -T -u gvmd gvmd gvmd --get-users 2>/dev/null | grep -qx admin; then break; fi
   sleep 10
