@@ -52,6 +52,15 @@ def _inner_report(root: Any) -> Any:
     raise ReportError("no report with a scan status in the XML")
 
 
+def _authenticated(report: Any, address: str) -> bool:
+    """The SSH login worked and commands returned output (Running-Kernel comes from `uname` over SSH)."""
+    for host in report.findall("host"):
+        if (host.findtext("ip") or "").strip() == address:
+            names = {(d.findtext("name") or "").strip() for d in host.findall("detail")}
+            return {"Auth-SSH-Success", "Running-Kernel"} <= names and "Auth-SSH-Failure" not in names
+    return False
+
+
 def parse_report(xml: bytes | str, assets: Sequence[Asset], min_qod: int = 70) -> ScanResult:
     try:
         root = ET.fromstring(xml)
@@ -68,6 +77,10 @@ def parse_report(xml: bytes | str, assets: Sequence[Asset], min_qod: int = 70) -
     missing = [f"{a.name} ({a.address})" for a in assets if a.address not in scanned]
     if missing:
         raise ReportError(", ".join(missing) + (" is" if len(missing) == 1 else " are") + " missing from the report")
+    unauthenticated = [f"{a.name} ({a.address})" for a in assets if not _authenticated(report, a.address)]
+    if unauthenticated:
+        # Network results keep such a host in the report while its package findings vanish and would count as fixed.
+        raise ReportError(", ".join(unauthenticated) + ": authenticated checks did not run (SSH login or commands)")
 
     merged: dict[tuple[str, str], Finding] = {}
     for result in report.findall("results/result"):
