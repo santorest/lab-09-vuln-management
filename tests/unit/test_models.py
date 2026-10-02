@@ -74,3 +74,19 @@ def test_exceptions_parse_and_validate(tmp_path: Path):
     )
     with pytest.raises(ConfigError, match="reason is required"):
         load_exceptions(path)
+
+
+@pytest.mark.parametrize(
+    ("fields", "message"),
+    [
+        ("reason: , approver: CISO", "reason is required"),
+        ("reason: 'legacy upload', approver: ", "approver is required"),
+        ("reason: 'legacy upload', approver: 3", "approver is required"),
+    ],
+)
+def test_exceptions_reject_empty_or_non_text_reason_and_approver(tmp_path: Path, fields: str, message: str):
+    # An empty YAML value is None, and str(None) is "None": it must not pass as a reason or an approver.
+    path = tmp_path / "e.yaml"
+    path.write_text(f"exceptions:\n  - {{host: files, oid: 1.2, {fields}, expires: 2026-12-31}}\n", encoding="utf-8")
+    with pytest.raises(ConfigError, match=message):
+        load_exceptions(path)

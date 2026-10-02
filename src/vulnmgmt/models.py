@@ -102,6 +102,11 @@ def load_assets(path: Path) -> list[Asset]:
     return assets
 
 
+def _text(value: object) -> str:
+    """Free text from YAML: an empty value (None) or a number is not text, so it reads as missing."""
+    return value.strip() if isinstance(value, str) else ""
+
+
 def load_exceptions(path: Path) -> list[RiskAcceptance]:
     data = _yaml(path)
     out: list[RiskAcceptance] = []
@@ -111,8 +116,8 @@ def load_exceptions(path: Path) -> list[RiskAcceptance]:
             acceptance = RiskAcceptance(
                 host=str(item["host"]),
                 oid=str(item["oid"]),
-                reason=str(item["reason"]).strip(),
-                approver=str(item["approver"]).strip(),
+                reason=_text(item["reason"]),
+                approver=_text(item["approver"]),
                 expires=expires if isinstance(expires, date) else date.fromisoformat(str(expires)),
             )
         except (KeyError, TypeError, ValueError) as exc:
