@@ -8,7 +8,6 @@ date: "2026-10-01"
 time_to_reproduce: "Una ejecución de CI (fork, activar Actions, ejecutar CI); la duración medida está en los Resultados"
 skills: [Greenbone, OpenVAS, Python, python-gvm, EPSS, CISA KEV, CVSS, Docker, Debian, GitHub Actions]
 frameworks: [CIS Controls v8 (1.1, 7.1, 7.2, 7.5, 7.6, 7.7), MITRE ATT&CK (T1190, T1210, T1068)]
-repo: "https://github.com/santorest/lab-09-vuln-management"
 bundle: "Publicado en el sitio del portafolio con su checksum SHA-256"
 ---
 
@@ -112,11 +111,11 @@ ruleset en `main` exige pull request y los cuatro jobs.
 ## 7. Resultados
 
 De la primera ejecución completa de CI en `main`,
-[ejecución 36951611428](https://github.com/santorest/lab-09-vuln-management/actions/runs/36951611428) (2026-10-02). El
-siguiente push ([ejecución 36954263327](https://github.com/santorest/lab-09-vuln-management/actions/runs/36954263327))
+ejecución 36951611428 (2026-10-02, archivada en `evidence/runs/36951611428/`). El
+siguiente push (ejecución 36954263327 (2026-10-02, archivada en `evidence/runs/36954263327/`))
 produjo exactamente los mismos números. `docs/example-report.html` y `docs/example-tracker.md` son el reporte y el
 seguimiento de esa ejecución. Tras las correcciones de la revisión final, la
-[ejecución 37009563738](https://github.com/santorest/lab-09-vuln-management/actions/runs/37009563738) (el mismo día,
+ejecución 37009563738 (2026-10-02, archivada en `evidence/runs/37009563738/`) (el mismo día,
 con un feed más nuevo: 189.015 pruebas) cumplió el nuevo requisito de comprobaciones autenticadas en los tres hosts y
 volvió a producir los mismos conteos; solo cambió el tiempo medio de corrección (8,5 minutos).
 

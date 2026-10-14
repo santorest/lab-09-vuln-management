@@ -8,7 +8,6 @@ date: "2026-10-01"
 time_to_reproduce: "One CI run (fork, enable Actions, run CI); the measured duration is in the Results"
 skills: [Greenbone, OpenVAS, Python, python-gvm, EPSS, CISA KEV, CVSS, Docker, Debian, GitHub Actions]
 frameworks: [CIS Controls v8 (1.1, 7.1, 7.2, 7.5, 7.6, 7.7), MITRE ATT&CK (T1190, T1210, T1068)]
-repo: "https://github.com/santorest/lab-09-vuln-management"
 bundle: "Published on the portfolio site with its SHA-256 checksum"
 ---
 
@@ -106,10 +105,10 @@ requires a pull request and all four jobs.
 ## 7. Results
 
 From the first complete CI run on `main`,
-[run 36951611428](https://github.com/santorest/lab-09-vuln-management/actions/runs/36951611428) (2026-10-02). The
-next push ([run 36954263327](https://github.com/santorest/lab-09-vuln-management/actions/runs/36954263327)) produced
+run 36951611428 (2026-10-02, archived in `evidence/runs/36951611428/`). The
+next push (run 36954263327 (2026-10-02, archived in `evidence/runs/36954263327/`)) produced
 exactly the same numbers. `docs/example-report.html` and `docs/example-tracker.md` are that run's report and tracker.
-After the final-review fixes, [run 37009563738](https://github.com/santorest/lab-09-vuln-management/actions/runs/37009563738)
+After the final-review fixes, run 37009563738 (2026-10-02, archived in `evidence/runs/37009563738/`)
 (same day, newer feed: 189,015 tests) passed the new authenticated-checks requirement on all three hosts and again
 produced the same counts; only the mean time to fix differed (8.5 minutes).
 

@@ -1,0 +1,404 @@
+{
+  "jobs": [
+    {
+      "id": 110665572435,
+      "run_id": 36951611428,
+      "workflow_name": "ci",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/santorest/lab-09-vuln-management/actions/runs/36951611428",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU3zafM8AAAAZxC6gUw",
+      "head_sha": "2fc552442bf610112f0d170627b45beefe126398",
+      "url": "https://api.github.com/repos/santorest/lab-09-vuln-management/actions/jobs/110665572435",
+      "html_url": "https://github.com/santorest/lab-09-vuln-management/actions/runs/36951611428/job/110665572435",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-02T01:34:52Z",
+      "started_at": "2026-10-02T01:34:54Z",
+      "completed_at": "2026-10-02T01:35:12Z",
+      "name": "lint",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-02T01:34:55Z",
+          "completed_at": "2026-10-02T01:34:56Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-02T01:34:56Z",
+          "completed_at": "2026-10-02T01:34:57Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-02T01:34:57Z",
+          "completed_at": "2026-10-02T01:34:57Z"
+        },
+        {
+          "name": "Run pip install -r requirements-dev.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-02T01:34:57Z",
+          "completed_at": "2026-10-02T01:35:07Z"
+        },
+        {
+          "name": "Run ruff check .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-02T01:35:07Z",
+          "completed_at": "2026-10-02T01:35:07Z"
+        },
+        {
+          "name": "Run ruff format --check .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-02T01:35:07Z",
+          "completed_at": "2026-10-02T01:35:07Z"
+        },
+        {
+          "name": "Run mypy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-02T01:35:07Z",
+          "completed_at": "2026-10-02T01:35:11Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-02T01:35:11Z",
+          "completed_at": "2026-10-02T01:35:11Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-02T01:35:11Z",
+          "completed_at": "2026-10-02T01:35:11Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-02T01:35:11Z",
+          "completed_at": "2026-10-02T01:35:12Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-09-vuln-management/check-runs/110665572435",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000889,
+      "runner_name": "GitHub Actions 1000000889",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110665572655,
+      "run_id": 36951611428,
+      "workflow_name": "ci",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/santorest/lab-09-vuln-management/actions/runs/36951611428",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU3zafM8AAAAZxC6hLw",
+      "head_sha": "2fc552442bf610112f0d170627b45beefe126398",
+      "url": "https://api.github.com/repos/santorest/lab-09-vuln-management/actions/jobs/110665572655",
+      "html_url": "https://github.com/santorest/lab-09-vuln-management/actions/runs/36951611428/job/110665572655",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-02T01:34:52Z",
+      "started_at": "2026-10-02T01:34:55Z",
+      "completed_at": "2026-10-02T01:35:16Z",
+      "name": "unit",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-02T01:34:55Z",
+          "completed_at": "2026-10-02T01:34:56Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-02T01:34:56Z",
+          "completed_at": "2026-10-02T01:34:57Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-02T01:34:57Z",
+          "completed_at": "2026-10-02T01:34:57Z"
+        },
+        {
+          "name": "Run pip install -r requirements-dev.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-02T01:34:57Z",
+          "completed_at": "2026-10-02T01:35:11Z"
+        },
+        {
+          "name": "Run pytest --cov=vulnmgmt --cov-report=term-missing --cov-fail-under=90",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-02T01:35:11Z",
+          "completed_at": "2026-10-02T01:35:14Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-02T01:35:14Z",
+          "completed_at": "2026-10-02T01:35:14Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-02T01:35:14Z",
+          "completed_at": "2026-10-02T01:35:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-02T01:35:14Z",
+          "completed_at": "2026-10-02T01:35:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-09-vuln-management/check-runs/110665572655",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000890,
+      "runner_name": "GitHub Actions 1000000890",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110665572657,
+      "run_id": 36951611428,
+      "workflow_name": "ci",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/santorest/lab-09-vuln-management/actions/runs/36951611428",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU3zafM8AAAAZxC6hMQ",
+      "head_sha": "2fc552442bf610112f0d170627b45beefe126398",
+      "url": "https://api.github.com/repos/santorest/lab-09-vuln-management/actions/jobs/110665572657",
+      "html_url": "https://github.com/santorest/lab-09-vuln-management/actions/runs/36951611428/job/110665572657",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-02T01:34:52Z",
+      "started_at": "2026-10-02T01:34:54Z",
+      "completed_at": "2026-10-02T02:05:53Z",
+      "name": "scan",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-02T01:34:55Z",
+          "completed_at": "2026-10-02T01:34:56Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-02T01:34:56Z",
+          "completed_at": "2026-10-02T01:34:57Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-02T01:34:57Z",
+          "completed_at": "2026-10-02T01:34:57Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-02T01:34:57Z",
+          "completed_at": "2026-10-02T01:35:03Z"
+        },
+        {
+          "name": "Secrets for this run",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-02T01:35:03Z",
+          "completed_at": "2026-10-02T01:35:03Z"
+        },
+        {
+          "name": "Scan, remediate, rescan, prioritize, track, gate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-02T01:35:03Z",
+          "completed_at": "2026-10-02T02:05:50Z"
+        },
+        {
+          "name": "Summary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-02T02:05:50Z",
+          "completed_at": "2026-10-02T02:05:50Z"
+        },
+        {
+          "name": "Fleet state",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-02T02:05:50Z",
+          "completed_at": "2026-10-02T02:05:50Z"
+        },
+        {
+          "name": "Logs on failure",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-02T02:05:50Z",
+          "completed_at": "2026-10-02T02:05:50Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-02T02:05:50Z",
+          "completed_at": "2026-10-02T02:05:51Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-02T02:05:51Z",
+          "completed_at": "2026-10-02T02:05:51Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-02T02:05:51Z",
+          "completed_at": "2026-10-02T02:05:51Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-02T02:05:51Z",
+          "completed_at": "2026-10-02T02:05:52Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-09-vuln-management/check-runs/110665572657",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000891,
+      "runner_name": "GitHub Actions 1000000891",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110665572707,
+      "run_id": 36951611428,
+      "workflow_name": "ci",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/santorest/lab-09-vuln-management/actions/runs/36951611428",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU3zafM8AAAAZxC6hYw",
+      "head_sha": "2fc552442bf610112f0d170627b45beefe126398",
+      "url": "https://api.github.com/repos/santorest/lab-09-vuln-management/actions/jobs/110665572707",
+      "html_url": "https://github.com/santorest/lab-09-vuln-management/actions/runs/36951611428/job/110665572707",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-02T01:34:52Z",
+      "started_at": "2026-10-02T01:34:55Z",
+      "completed_at": "2026-10-02T01:35:04Z",
+      "name": "secrets",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-02T01:34:56Z",
+          "completed_at": "2026-10-02T01:34:56Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-02T01:34:56Z",
+          "completed_at": "2026-10-02T01:34:57Z"
+        },
+        {
+          "name": "gitleaks (full history, pinned by digest)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-02T01:34:57Z",
+          "completed_at": "2026-10-02T01:35:01Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-02T01:35:01Z",
+          "completed_at": "2026-10-02T01:35:02Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-02T01:35:02Z",
+          "completed_at": "2026-10-02T01:35:02Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-09-vuln-management/check-runs/110665572707",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000892,
+      "runner_name": "GitHub Actions 1000000892",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
