@@ -26,7 +26,7 @@ services:
     volumes: [data_objects_vol:/mnt]
     depends_on: {data-objects: {condition: service_healthy}}
   gpg-data:
-    image: registry.community.greenbone.net/community/gpg-data@sha256:aa6954b978ce1f7320ec508b91ca39e3632632533fca9e425bd74296a369389c
+    image: registry.community.greenbone.net/community/gpg-data@sha256:8edfc0f47ecaa25f2adca4bafce315af1803a991f0a0162f008bacda00bde3c5
     volumes: [gpg_data_vol:/mnt]
   redis-server:
     image: registry.community.greenbone.net/community/redis-server@sha256:6da6a7c7221aa3ab231961fd6ca001d552b6a2c7727ac6201c6d8a360baa963a
@@ -41,7 +41,7 @@ services:
     volumes: [psql_data_vol:/var/lib/postgresql, psql_socket_vol:/var/run/postgresql]
     depends_on: {pg-gvm-migrator: {condition: service_completed_successfully}}
   gvmd:
-    image: registry.community.greenbone.net/community/gvmd@sha256:fec601848e0847b27d7bb262b684a05747d369b85ddde75f7074fd2880f06221
+    image: registry.community.greenbone.net/community/gvmd@sha256:2d4191418d8998a872954ab30292a18c4eae74ffb8f15aec70d8eb2d16ee9b8c
     restart: always
     volumes:
       - gvmd_data_vol:/var/lib/gvm
@@ -56,7 +56,7 @@ services:
       data-objects: {condition: service_healthy}
       report-formats: {condition: service_healthy}
   configure-openvas:
-    image: registry.community.greenbone.net/community/openvas-scanner@sha256:2b9782730e41ee84c727f3846d28cba982cfc259f4f2a621550a4aaf8cce9d7b
+    image: registry.community.greenbone.net/community/openvas-scanner@sha256:525c48bb93e39218d4de360a90d991a2ff735e1fe08f97ef35c5cbc375a08408
     volumes: [openvas_data_vol:/mnt, openvas_log_data_vol:/var/log/openvas]
     command:
       - /bin/sh
@@ -68,7 +68,7 @@ services:
         touch /var/log/openvas/openvas.log
         chmod 666 /var/log/openvas/openvas.log
   openvasd:
-    image: registry.community.greenbone.net/community/openvas-scanner@sha256:2b9782730e41ee84c727f3846d28cba982cfc259f4f2a621550a4aaf8cce9d7b
+    image: registry.community.greenbone.net/community/openvas-scanner@sha256:525c48bb93e39218d4de360a90d991a2ff735e1fe08f97ef35c5cbc375a08408
     restart: always
     environment: {OPENVASD_MODE: service_notus, GNUPGHOME: /etc/openvas/gnupg, LISTENING: "0.0.0.0:80"}
     volumes:
@@ -85,7 +85,7 @@ services:
       default:
         aliases: [openvasd]
   ospd-openvas:
-    image: registry.community.greenbone.net/community/ospd-openvas@sha256:db44c0dbdc63b4f57b3a0a92d8af6882dfe4559bd4409a7dd0ce49d732230c82
+    image: registry.community.greenbone.net/community/ospd-openvas@sha256:31a85272abc77521c98451ce6834ed7d2f887e98ff1b26ff3fd94f00d000b169
     restart: always
     hostname: ospd-openvas.local
     cap_add: [NET_ADMIN, NET_RAW]
